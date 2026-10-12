@@ -15,6 +15,7 @@ public class ModAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, BambuShop.MOD_ID);
 
+    /** Dinero del jugador. Persiste al morir. */
     public static final Supplier<AttachmentType<Long>> MONEY = ATTACHMENT_TYPES.register(
             "money",
             () -> AttachmentType.builder(() -> 0L)
@@ -23,10 +24,20 @@ public class ModAttachments {
                     .build()
     );
 
+    /** Rango del jugador (0 = sin rango, 1-20). Persiste al morir. */
+    public static final Supplier<AttachmentType<Integer>> RANK = ATTACHMENT_TYPES.register(
+            "rank",
+            () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("rank"))
+                    .copyOnDeath()
+                    .build()
+    );
+
     public static void register(IEventBus modBus) {
         ATTACHMENT_TYPES.register(modBus);
     }
 
+    // ===== DINERO =====
     public static long getMoney(Player player) {
         return player.getData(MONEY);
     }
@@ -44,5 +55,19 @@ public class ModAttachments {
         if (current < amount) return false;
         setMoney(player, current - amount);
         return true;
+    }
+
+    // ===== RANGO =====
+    public static int getRank(Player player) {
+        return player.getData(RANK);
+    }
+
+    public static void setRank(Player player, int rank) {
+        int clamped = Math.max(0, Math.min(20, rank));
+        player.setData(RANK, clamped);
+    }
+
+    public static void addRank(Player player, int amount) {
+        setRank(player, getRank(player) + amount);
     }
 }
