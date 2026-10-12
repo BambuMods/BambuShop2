@@ -1,5 +1,6 @@
 package com.bambumods.bambushop;
 
+import com.bambumods.bambushop.registry.ModMenus;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -14,5 +15,6 @@ public class BambuShop {
 
     public BambuShop(IEventBus modBus, ModContainer container) {
         LOGGER.info("🍃 Bambu Shop cargando...");
+        ModMenus.register(modBus);
     }
 }
