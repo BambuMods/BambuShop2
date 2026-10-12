@@ -19,23 +19,52 @@ public class MainMenuScreen extends AbstractContainerScreen<MainMenu> {
     protected void init() {
         super.init();
 
-        // Botón Cerrar
+        int centerX = this.leftPos + this.imageWidth / 2;
+        int centerY = this.topPos + this.imageHeight / 2;
+
+        // Botón TIENDA (izquierda)
+        this.addRenderableWidget(
+                Button.builder(Component.literal("🛒 TIENDA"), b -> this.onClose())
+                        .bounds(centerX - 90, centerY - 20, 80, 40)
+                        .build()
+        );
+
+        // Botón RANGOS (derecha)
+        this.addRenderableWidget(
+                Button.builder(Component.literal("🎖️ RANGOS"), b -> this.onClose())
+                        .bounds(centerX + 10, centerY - 20, 80, 40)
+                        .build()
+        );
+
+        // Botón Cerrar (abajo)
         this.addRenderableWidget(
                 Button.builder(Component.literal("Cerrar"), b -> this.onClose())
-                        .bounds(this.leftPos + 88, this.topPos + 160, 80, 20)
+                        .bounds(centerX - 40, this.topPos + this.imageHeight - 30, 80, 20)
                         .build()
         );
     }
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        // Fondo provisional beige bambú
-        graphics.fill(this.leftPos, this.topPos, this.leftPos + this.imageWidth, this.topPos + this.imageHeight, 0xFFE8D5A8);
-        // Borde verde bambú
-        graphics.fill(this.leftPos, this.topPos, this.leftPos + this.imageWidth, this.topPos + 2, 0xFF3E5C2E);
-        graphics.fill(this.leftPos, this.topPos + this.imageHeight - 2, this.leftPos + this.imageWidth, this.topPos + this.imageHeight, 0xFF3E5C2E);
-        graphics.fill(this.leftPos, this.topPos, this.leftPos + 2, this.topPos + this.imageHeight, 0xFF3E5C2E);
-        graphics.fill(this.leftPos + this.imageWidth - 2, this.topPos, this.leftPos + this.imageWidth, this.topPos + this.imageHeight, 0xFF3E5C2E);
+        // Fondo beige bambú
+        graphics.fill(this.leftPos, this.topPos,
+                this.leftPos + this.imageWidth, this.topPos + this.imageHeight,
+                0xFFE8D5A8);
+
+        // Bordes verde bambú
+        graphics.fill(this.leftPos, this.topPos,
+                this.leftPos + this.imageWidth, this.topPos + 2, 0xFF3E5C2E);
+        graphics.fill(this.leftPos, this.topPos + this.imageHeight - 2,
+                this.leftPos + this.imageWidth, this.topPos + this.imageHeight, 0xFF3E5C2E);
+        graphics.fill(this.leftPos, this.topPos,
+                this.leftPos + 2, this.topPos + this.imageHeight, 0xFF3E5C2E);
+        graphics.fill(this.leftPos + this.imageWidth - 2, this.topPos,
+                this.leftPos + this.imageWidth, this.topPos + this.imageHeight, 0xFF3E5C2E);
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        // Vacío a propósito: quitamos "Bambu Shop" e "Inventory"
     }
 
     @Override
