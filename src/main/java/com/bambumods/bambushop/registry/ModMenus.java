@@ -2,6 +2,7 @@ package com.bambumods.bambushop.registry;
 
 import com.bambumods.bambushop.BambuShop;
 import com.bambumods.bambushop.menu.MainMenu;
+import com.bambumods.bambushop.menu.RankMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;
@@ -16,6 +17,9 @@ public class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<MainMenu>> MAIN_MENU =
             MENUS.register("main_menu", () -> IMenuTypeExtension.create(MainMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RankMenu>> RANK_MENU =
+            MENUS.register("rank_menu", () -> IMenuTypeExtension.create(RankMenu::new));
 
     public static void register(IEventBus modBus) {
         MENUS.register(modBus);

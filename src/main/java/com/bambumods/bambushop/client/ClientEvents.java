@@ -2,6 +2,7 @@ package com.bambumods.bambushop.client;
 
 import com.bambumods.bambushop.BambuShop;
 import com.bambumods.bambushop.client.gui.MainMenuScreen;
+import com.bambumods.bambushop.client.gui.RankMenuScreen;
 import com.bambumods.bambushop.registry.ModMenus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,5 +15,6 @@ public class ClientEvents {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.MAIN_MENU.get(), MainMenuScreen::new);
+        event.register(ModMenus.RANK_MENU.get(), RankMenuScreen::new);
     }
 }
