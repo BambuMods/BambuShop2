@@ -60,9 +60,7 @@ public class RankCommand {
                                                 Component.literal("Rangos")
                                         ),
                                         buf -> {
-                                            // ===== ESCRIBIR DATOS DEL SERVIDOR AL CLIENTE =====
                                             RankMenu menu = new RankMenu(0, player.getInventory(), player);
-
                                             buf.writeInt(menu.getCurrentRank());
                                             buf.writeInt(menu.getNextRankLevel());
                                             buf.writeUtf(menu.getNextRankName());
@@ -70,7 +68,6 @@ public class RankCommand {
                                             buf.writeLong(menu.getMoneyCost());
                                             buf.writeInt(menu.getXpLevel());
                                             buf.writeInt(menu.getXpCost());
-
                                             buf.writeInt(menu.getRequirements().size());
                                             for (RankMenu.SyncedReq req : menu.getRequirements()) {
                                                 net.minecraft.world.item.ItemStack.STREAM_CODEC.encode(buf, req.stack);
