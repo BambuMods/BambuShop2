@@ -1,5 +1,6 @@
 package com.bambumods.bambushop.command;
 
+import com.bambumods.bambushop.attachment.ModAttachments;
 import com.bambumods.bambushop.menu.MainMenu;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,13 +23,28 @@ public class MenuCommand {
                 Commands.literal("menu")
                         .executes(context -> {
                             if (context.getSource().getEntity() instanceof ServerPlayer player) {
-                                player.openMenu(new SimpleMenuProvider(
-                                        (id, inv, p) -> new MainMenu(id, inv),
-                                        Component.literal("Bambu Shop")
-                                ));
+                                player.openMenu(
+                                        new SimpleMenuProvider(
+                                                (id, inv, p) -> new MainMenu(id, inv, ModAttachments.getMoney(player)),
+                                                Component.literal("Bambu Shop")
+                                        ),
+                                        buf -> buf.writeLong(ModAttachments.getMoney(player))
+                                );
                                 return 1;
                             }
                             context.getSource().sendFailure(Component.literal("Este comando solo lo pueden usar jugadores"));
+                            return 0;
+                        })
+        );
+
+        dispatcher.register(
+                Commands.literal("addmoney")
+                        .executes(context -> {
+                            if (context.getSource().getEntity() instanceof ServerPlayer player) {
+                                ModAttachments.addMoney(player, 100);
+                                player.sendSystemMessage(Component.literal("§a+100 $"));
+                                return 1;
+                            }
                             return 0;
                         })
         );

@@ -1,7 +1,7 @@
 package com.bambumods.bambushop.menu;
 
 import com.bambumods.bambushop.registry.ModMenus;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -9,14 +9,21 @@ import net.minecraft.world.item.ItemStack;
 
 public class MainMenu extends AbstractContainerMenu {
 
-    // Constructor para el cliente (recibe datos del servidor)
-    public MainMenu(int containerId, Inventory playerInventory, FriendlyByteBuf data) {
-        this(containerId, playerInventory);
+    private final long money;
+
+    // Constructor del cliente (lee el dinero del buffer)
+    public MainMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf data) {
+        this(containerId, playerInventory, data.readLong());
     }
 
     // Constructor principal
-    public MainMenu(int containerId, Inventory playerInventory) {
+    public MainMenu(int containerId, Inventory playerInventory, long money) {
         super(ModMenus.MAIN_MENU.get(), containerId);
+        this.money = money;
+    }
+
+    public long getMoney() {
+        return money;
     }
 
     @Override

@@ -15,11 +15,10 @@ public class ModAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, BambuShop.MOD_ID);
 
-    /** Dinero del jugador. Persiste al morir (copyOnDeath). */
     public static final Supplier<AttachmentType<Long>> MONEY = ATTACHMENT_TYPES.register(
             "money",
             () -> AttachmentType.builder(() -> 0L)
-                    .serialize(Codec.LONG)
+                    .serialize(Codec.LONG.fieldOf("money"))
                     .copyOnDeath()
                     .build()
     );
@@ -27,8 +26,6 @@ public class ModAttachments {
     public static void register(IEventBus modBus) {
         ATTACHMENT_TYPES.register(modBus);
     }
-
-    // ==== Helpers para manejar el dinero ====
 
     public static long getMoney(Player player) {
         return player.getData(MONEY);
