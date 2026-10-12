@@ -18,5 +18,11 @@ public class ModNetworking {
                 RankUpPacket.STREAM_CODEC,
                 RankUpPacket::handle
         );
+
+        registrar.playToServer(
+                OpenRankGuiPacket.TYPE,
+                OpenRankGuiPacket.STREAM_CODEC,
+                OpenRankGuiPacket::handle
+        );
     }
 }

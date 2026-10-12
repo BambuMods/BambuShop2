@@ -1,6 +1,7 @@
 package com.bambumods.bambushop.client.gui;
 
 import com.bambumods.bambushop.menu.MainMenu;
+import com.bambumods.bambushop.network.OpenRankGuiPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -22,18 +23,23 @@ public class MainMenuScreen extends AbstractContainerScreen<MainMenu> {
         int centerX = this.leftPos + this.imageWidth / 2;
         int centerY = this.topPos + this.imageHeight / 2;
 
+        // Botón TIENDA (por ahora cierra, luego lo haremos)
         this.addRenderableWidget(
                 Button.builder(Component.literal("🛒 TIENDA"), b -> this.onClose())
                         .bounds(centerX - 90, centerY - 20, 80, 40)
                         .build()
         );
 
+        // Botón RANGOS - abre la GUI de rangos
         this.addRenderableWidget(
-                Button.builder(Component.literal("🎖️ RANGOS"), b -> this.onClose())
+                Button.builder(Component.literal("🎖️ RANGOS"), b -> {
+                            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(OpenRankGuiPacket.INSTANCE);
+                        })
                         .bounds(centerX + 10, centerY - 20, 80, 40)
                         .build()
         );
 
+        // Botón Cerrar
         this.addRenderableWidget(
                 Button.builder(Component.literal("Cerrar"), b -> this.onClose())
                         .bounds(centerX - 40, this.topPos + this.imageHeight - 30, 80, 20)
@@ -68,7 +74,6 @@ public class MainMenuScreen extends AbstractContainerScreen<MainMenu> {
 
         int centerX = this.leftPos + this.imageWidth / 2;
 
-        // Título
         graphics.drawCenteredString(
                 this.font,
                 "🌿 BAMBU SHOP 🌿",
@@ -77,7 +82,6 @@ public class MainMenuScreen extends AbstractContainerScreen<MainMenu> {
                 0xFF3E5C2E
         );
 
-        // Dinero (desde el menú, ya sincronizado)
         String moneyText = "💵 " + this.menu.getMoney() + " $";
         graphics.drawCenteredString(
                 this.font,
