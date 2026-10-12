@@ -49,15 +49,36 @@ public class RankCommand {
                         )
         );
 
-        // /rankgui - Abre la GUI de rangos (TEMPORAL)
+        // /rankgui - Abre la GUI de rangos
         dispatcher.register(
                 Commands.literal("rankgui")
                         .executes(context -> {
                             if (context.getSource().getEntity() instanceof ServerPlayer player) {
-                                player.openMenu(new SimpleMenuProvider(
-                                        (id, inv, p) -> new RankMenu(id, inv),
-                                        Component.literal("Rangos")
-                                ));
+                                player.openMenu(
+                                        new SimpleMenuProvider(
+                                                (id, inv, p) -> new RankMenu(id, inv, player),
+                                                Component.literal("Rangos")
+                                        ),
+                                        buf -> {
+                                            // ===== ESCRIBIR DATOS DEL SERVIDOR AL CLIENTE =====
+                                            RankMenu menu = new RankMenu(0, player.getInventory(), player);
+
+                                            buf.writeInt(menu.getCurrentRank());
+                                            buf.writeInt(menu.getNextRankLevel());
+                                            buf.writeUtf(menu.getNextRankName());
+                                            buf.writeLong(menu.getMoney());
+                                            buf.writeLong(menu.getMoneyCost());
+                                            buf.writeInt(menu.getXpLevel());
+                                            buf.writeInt(menu.getXpCost());
+
+                                            buf.writeInt(menu.getRequirements().size());
+                                            for (RankMenu.SyncedReq req : menu.getRequirements()) {
+                                                net.minecraft.world.item.ItemStack.STREAM_CODEC.encode(buf, req.stack);
+                                                buf.writeInt(req.needed);
+                                                buf.writeInt(req.has);
+                                            }
+                                        }
+                                );
                                 return 1;
                             }
                             return 0;
