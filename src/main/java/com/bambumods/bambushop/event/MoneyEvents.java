@@ -16,20 +16,17 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 @EventBusSubscriber(modid = BambuShop.MOD_ID)
 public class MoneyEvents {
 
-    // ===== MINAR BLOQUES Y TALAR TRONCOS =====
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (!(event.getPlayer() instanceof ServerPlayer player)) return;
 
         BlockState state = event.getState();
-        long reward = 0L;
+        long reward;
 
-        // ¿Es un tronco?
         long logReward = ShopRewards.getLogReward(state.getBlock());
         if (logReward > 0) {
             reward = logReward;
         } else {
-            // ¿Es un mineral?
             reward = ShopRewards.getBlockReward(state.getBlock());
         }
 
@@ -38,7 +35,6 @@ public class MoneyEvents {
         }
     }
 
-    // ===== MATAR MOBS =====
     @SubscribeEvent
     public static void onMobKill(LivingDeathEvent event) {
         if (event.getEntity().level().isClientSide()) return;
@@ -50,7 +46,6 @@ public class MoneyEvents {
         }
     }
 
-    // ===== PESCAR =====
     @SubscribeEvent
     public static void onFish(ItemFishedEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
