@@ -30,5 +30,23 @@ public class ModNetworking {
                 OpenShopCategoriesPacket.STREAM_CODEC,
                 OpenShopCategoriesPacket::handle
         );
+
+        registrar.playToServer(
+                OpenShopCategoryPacket.TYPE,
+                OpenShopCategoryPacket.STREAM_CODEC,
+                OpenShopCategoryPacket::handle
+        );
+
+        registrar.playToServer(
+                OpenShopCategoryItemPacket.TYPE,
+                OpenShopCategoryItemPacket.STREAM_CODEC,
+                OpenShopCategoryItemPacket::handle
+        );
+
+        registrar.playToServer(
+                BuyItemPacket.TYPE,
+                BuyItemPacket.STREAM_CODEC,
+                BuyItemPacket::handle
+        );
     }
 }

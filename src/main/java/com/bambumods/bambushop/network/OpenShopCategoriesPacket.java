@@ -1,6 +1,7 @@
 package com.bambumods.bambushop.network;
 
 import com.bambumods.bambushop.BambuShop;
+import com.bambumods.bambushop.attachment.ModAttachments;
 import com.bambumods.bambushop.menu.ShopCategoriesMenu;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
@@ -35,9 +36,13 @@ public record OpenShopCategoriesPacket() implements CustomPacketPayload {
             final ServerPlayer sp = player;
             sp.openMenu(
                     new SimpleMenuProvider(
-                            (id, inv, p) -> new ShopCategoriesMenu(id, inv, null),
+                            (id, inv, p) -> new ShopCategoriesMenu(id, inv, sp),
                             Component.literal("Bambu Shop")
-                    )
+                    ),
+                    buf -> {
+                        buf.writeLong(ModAttachments.getMoney(sp));
+                        buf.writeInt(ModAttachments.getRank(sp));
+                    }
             );
         });
     }

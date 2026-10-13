@@ -1,6 +1,7 @@
 package com.bambumods.bambushop.client.gui;
 
 import com.bambumods.bambushop.menu.ShopCategoriesMenu;
+import com.bambumods.bambushop.network.OpenShopCategoryPacket;
 import com.bambumods.bambushop.shop.ShopCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -30,7 +31,38 @@ public class ShopCategoriesScreen extends AbstractContainerScreen<ShopCategories
         int x = this.leftPos;
         int y = this.topPos;
 
-        // Botón Cerrar real
+        List<ShopCategory> buyCats = ShopCategory.getBuyCategories();
+        int buyStartY = y + 48;
+        for (int i = 0; i < buyCats.size(); i++) {
+            ShopCategory cat = buyCats.get(i);
+            int col = i % 2;
+            int row = i / 2;
+            int bx = x + 10 + col * 124;
+            int by = buyStartY + row * 24;
+            this.addRenderableWidget(
+                    Button.builder(Component.literal(cat.getDisplayName()), b -> {
+                                net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
+                                        new OpenShopCategoryPacket(cat.getId()));
+                            })
+                            .bounds(bx, by, 118, 20)
+                            .build()
+            );
+        }
+
+        List<ShopCategory> sellCats = ShopCategory.getSellCategories();
+        int sellTitleY = buyStartY + ((buyCats.size() + 1) / 2) * 24 + 10;
+        int sellStartY = sellTitleY + 14;
+        for (int i = 0; i < sellCats.size(); i++) {
+            ShopCategory cat = sellCats.get(i);
+            int bx = x + 10 + (i % 2) * 124;
+            int by = sellStartY + (i / 2) * 24;
+            this.addRenderableWidget(
+                    Button.builder(Component.literal(cat.getDisplayName()), b -> {})
+                            .bounds(bx, by, 118, 20)
+                            .build()
+            );
+        }
+
         this.addRenderableWidget(
                 Button.builder(Component.literal("Cerrar"), b -> this.onClose())
                         .bounds(x + GUI_WIDTH - 62, y + GUI_HEIGHT - 24, 52, 18)
@@ -46,7 +78,6 @@ public class ShopCategoriesScreen extends AbstractContainerScreen<ShopCategories
         int x = this.leftPos;
         int y = this.topPos;
 
-        // ===== CABECERA =====
         g.fill(x, y, x + GUI_WIDTH, y + 26, 0xFF2A411F);
         g.fill(x, y + 26, x + GUI_WIDTH, y + 27, 0xFF7BA05B);
 
@@ -57,54 +88,14 @@ public class ShopCategoriesScreen extends AbstractContainerScreen<ShopCategories
                 y + 9,
                 0xFFFFD75E, true);
 
-        // ===== COMPRAR =====
-        g.drawString(this.font, "COMPRAR",
-                x + 10, y + 34,
-                0xFF7BFF7B, true);
+        g.drawString(this.font, "COMPRAR", x + 10, y + 34, 0xFF7BFF7B, true);
 
         List<ShopCategory> buyCats = ShopCategory.getBuyCategories();
         int buyStartY = y + 48;
-        for (int i = 0; i < buyCats.size(); i++) {
-            ShopCategory cat = buyCats.get(i);
-            int col = i % 2;
-            int row = i / 2;
-            int bx = x + 10 + col * 124;
-            int by = buyStartY + row * 24;
-            drawCategoryButton(g, bx, by, 118, 20, cat.getDisplayName(), mouseX, mouseY);
-        }
-
-        // ===== VENDER =====
         int sellTitleY = buyStartY + ((buyCats.size() + 1) / 2) * 24 + 10;
-        g.drawString(this.font, "VENDER",
-                x + 10, sellTitleY,
-                0xFFFF5555, true);
+        g.drawString(this.font, "VENDER", x + 10, sellTitleY, 0xFFFF5555, true);
 
-        List<ShopCategory> sellCats = ShopCategory.getSellCategories();
-        int sellStartY = sellTitleY + 14;
-        for (int i = 0; i < sellCats.size(); i++) {
-            ShopCategory cat = sellCats.get(i);
-            int bx = x + 10 + (i % 2) * 124;
-            int by = sellStartY + (i / 2) * 24;
-            drawCategoryButton(g, bx, by, 118, 20, cat.getDisplayName(), mouseX, mouseY);
-        }
-    }
-
-    private void drawCategoryButton(GuiGraphics g, int x, int y, int w, int h, String label, int mouseX, int mouseY) {
-        boolean hover = mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
-        int bg = hover ? 0xFF7BA05B : 0xFF3E2A1A;
-        int border = 0xFF7BA05B;
-
-        g.fill(x, y, x + w, y + h, bg);
-        g.fill(x, y, x + w, y + 1, border);
-        g.fill(x, y + h - 1, x + w, y + h, border);
-        g.fill(x, y, x + 1, y + h, border);
-        g.fill(x + w - 1, y, x + w, y + h, border);
-
-        int textWidth = this.font.width(label);
-        g.drawString(this.font, label,
-                x + (w - textWidth) / 2,
-                y + (h - 8) / 2,
-                0xFFFFF0D0, false);
+        ShopHudOverlay.render(g, x, y, GUI_WIDTH, menu.getMoney(), menu.getRank());
     }
 
     @Override
