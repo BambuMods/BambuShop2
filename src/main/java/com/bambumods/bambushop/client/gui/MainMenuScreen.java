@@ -2,6 +2,7 @@ package com.bambumods.bambushop.client.gui;
 
 import com.bambumods.bambushop.menu.MainMenu;
 import com.bambumods.bambushop.network.OpenRankGuiPacket;
+import com.bambumods.bambushop.network.OpenShopCategoriesPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -23,9 +24,11 @@ public class MainMenuScreen extends AbstractContainerScreen<MainMenu> {
         int centerX = this.leftPos + this.imageWidth / 2;
         int centerY = this.topPos + this.imageHeight / 2;
 
-        // Botón TIENDA (por ahora cierra, luego lo haremos)
+        // Botón TIENDA - abre la GUI de categorías
         this.addRenderableWidget(
-                Button.builder(Component.literal("🛒 TIENDA"), b -> this.onClose())
+                Button.builder(Component.literal("🛒 TIENDA"), b -> {
+                            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(OpenShopCategoriesPacket.INSTANCE);
+                        })
                         .bounds(centerX - 90, centerY - 20, 80, 40)
                         .build()
         );

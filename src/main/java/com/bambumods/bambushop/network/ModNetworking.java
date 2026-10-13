@@ -24,5 +24,11 @@ public class ModNetworking {
                 OpenRankGuiPacket.STREAM_CODEC,
                 OpenRankGuiPacket::handle
         );
+
+        registrar.playToServer(
+                OpenShopCategoriesPacket.TYPE,
+                OpenShopCategoriesPacket.STREAM_CODEC,
+                OpenShopCategoriesPacket::handle
+        );
     }
 }

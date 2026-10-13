@@ -23,32 +23,31 @@ public class RankMenuScreen extends AbstractContainerScreen<RankMenu> {
     public RankMenuScreen(RankMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.imageWidth = 256;
-        this.imageHeight = 220;
+        this.imageHeight = 260;
     }
 
     @Override
     protected void init() {
         super.init();
 
-        int cx = this.leftPos + this.imageWidth / 2;
+        int x = this.leftPos;
+        int y = this.topPos;
+        int bottomY = y + this.imageHeight - 28;
 
-        // Botón ASCENDER
-        this.ascendButton = Button.builder(
-                        Component.literal("🎖 ASCENDER"),
-                        b -> {
-                            // Enviar packet al servidor
-                            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(RankUpPacket.INSTANCE);
-                        })
-                .bounds(cx - 90, this.topPos + this.imageHeight - 55, 80, 20)
-                .build();
-        this.addRenderableWidget(this.ascendButton);
-
-        // Botón Volver
+        // Botón Volver (izquierda)
         this.addRenderableWidget(
                 Button.builder(Component.literal("⬅ Volver"), b -> this.onClose())
-                        .bounds(cx + 10, this.topPos + this.imageHeight - 55, 80, 20)
+                        .bounds(x + 15, bottomY, 80, 20)
                         .build()
         );
+
+        // Botón ASCENDER (derecha)
+        this.ascendButton = Button.builder(
+                        Component.literal("🎖 ASCENDER"),
+                        b -> net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(RankUpPacket.INSTANCE))
+                .bounds(x + this.imageWidth - 95, bottomY, 80, 20)
+                .build();
+        this.addRenderableWidget(this.ascendButton);
     }
 
     @Override
