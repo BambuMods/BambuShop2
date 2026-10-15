@@ -17,8 +17,12 @@ import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 
+import java.util.Random;
+
 @EventBusSubscriber(modid = BambuShop.MOD_ID)
 public class MoneyEvents {
+
+    private static final Random RANDOM = new Random();
 
     // ===== DINERO AL MINAR/TALAR =====
 
@@ -37,7 +41,10 @@ public class MoneyEvents {
         }
 
         if (reward > 0) {
-            long finalReward = RankManager.applyMultiplier(player, reward);
+            long withRank = RankManager.applyMultiplier(player, reward);
+            // Factor aleatorio 1.0 - 10.0
+            double randomFactor = 1.0 + (RANDOM.nextDouble() * 9.0);
+            long finalReward = (long) (withRank * randomFactor);
             ModAttachments.addMoney(player, finalReward);
         }
     }
@@ -92,7 +99,10 @@ public class MoneyEvents {
         for (ItemStack drop : event.getDrops()) {
             long reward = ShopRewards.getFishReward(drop);
             if (reward > 0) {
-                long finalReward = RankManager.applyMultiplier(player, reward);
+                long withRank = RankManager.applyMultiplier(player, reward);
+                // Factor aleatorio 1.0 - 5.0
+                double randomFactor = 1.0 + (RANDOM.nextDouble() * 4.0);
+                long finalReward = (long) (withRank * randomFactor);
                 ModAttachments.addMoney(player, finalReward);
             }
         }

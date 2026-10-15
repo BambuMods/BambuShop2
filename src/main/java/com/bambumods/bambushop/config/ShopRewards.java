@@ -24,7 +24,7 @@ public class ShopRewards {
     public static final Map<ItemStack, Long> FISH_REWARDS = new HashMap<>();
 
     static {
-        // ----- MINERALES -----
+        // ----- MINERALES (SIN CAMBIOS) -----
         BLOCK_REWARDS.put(Blocks.COAL_ORE, 2L);
         BLOCK_REWARDS.put(Blocks.DEEPSLATE_COAL_ORE, 2L);
         BLOCK_REWARDS.put(Blocks.COPPER_ORE, 3L);
@@ -45,7 +45,7 @@ public class ShopRewards {
         BLOCK_REWARDS.put(Blocks.NETHER_GOLD_ORE, 6L);
         BLOCK_REWARDS.put(Blocks.ANCIENT_DEBRIS, 500L);
 
-        // ----- MOBS -----
+        // ----- MOBS (SIN CAMBIOS) -----
         MOB_REWARDS.put(EntityType.ZOMBIE, 2L);
         MOB_REWARDS.put(EntityType.SKELETON, 3L);
         MOB_REWARDS.put(EntityType.CREEPER, 5L);
@@ -65,23 +65,23 @@ public class ShopRewards {
         MOB_REWARDS.put(EntityType.SHEEP, 1L);
         MOB_REWARDS.put(EntityType.CHICKEN, 1L);
 
-        // ----- TRONCOS -----
-        LOG_REWARDS.put(Blocks.OAK_LOG, 1L);
-        LOG_REWARDS.put(Blocks.SPRUCE_LOG, 1L);
-        LOG_REWARDS.put(Blocks.BIRCH_LOG, 1L);
-        LOG_REWARDS.put(Blocks.JUNGLE_LOG, 2L);
-        LOG_REWARDS.put(Blocks.ACACIA_LOG, 1L);
-        LOG_REWARDS.put(Blocks.DARK_OAK_LOG, 1L);
-        LOG_REWARDS.put(Blocks.MANGROVE_LOG, 2L);
-        LOG_REWARDS.put(Blocks.CHERRY_LOG, 3L);
-        LOG_REWARDS.put(Blocks.CRIMSON_STEM, 3L);
-        LOG_REWARDS.put(Blocks.WARPED_STEM, 3L);
+        // ----- TRONCOS (×10) -----
+        LOG_REWARDS.put(Blocks.OAK_LOG, 10L);
+        LOG_REWARDS.put(Blocks.SPRUCE_LOG, 10L);
+        LOG_REWARDS.put(Blocks.BIRCH_LOG, 10L);
+        LOG_REWARDS.put(Blocks.JUNGLE_LOG, 20L);
+        LOG_REWARDS.put(Blocks.ACACIA_LOG, 10L);
+        LOG_REWARDS.put(Blocks.DARK_OAK_LOG, 10L);
+        LOG_REWARDS.put(Blocks.MANGROVE_LOG, 20L);
+        LOG_REWARDS.put(Blocks.CHERRY_LOG, 30L);
+        LOG_REWARDS.put(Blocks.CRIMSON_STEM, 30L);
+        LOG_REWARDS.put(Blocks.WARPED_STEM, 30L);
 
-        // ----- PESCA -----
-        FISH_REWARDS.put(new ItemStack(Items.COD), 3L);
-        FISH_REWARDS.put(new ItemStack(Items.SALMON), 5L);
-        FISH_REWARDS.put(new ItemStack(Items.TROPICAL_FISH), 10L);
-        FISH_REWARDS.put(new ItemStack(Items.PUFFERFISH), 15L);
+        // ----- PESCA (×10) -----
+        FISH_REWARDS.put(new ItemStack(Items.COD), 30L);
+        FISH_REWARDS.put(new ItemStack(Items.SALMON), 50L);
+        FISH_REWARDS.put(new ItemStack(Items.TROPICAL_FISH), 100L);
+        FISH_REWARDS.put(new ItemStack(Items.PUFFERFISH), 150L);
     }
 
     // Métodos de consulta
