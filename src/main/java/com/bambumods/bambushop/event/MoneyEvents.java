@@ -3,8 +3,10 @@ package com.bambumods.bambushop.event;
 import com.bambumods.bambushop.BambuShop;
 import com.bambumods.bambushop.attachment.ModAttachments;
 import com.bambumods.bambushop.config.ShopRewards;
+import com.bambumods.bambushop.mob.MobRewardsHelper;
 import com.bambumods.bambushop.rank.RankManager;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -59,25 +61,26 @@ public class MoneyEvents {
     public static void onMobKill(LivingDeathEvent event) {
         if (event.getEntity().level().isClientSide()) return;
         if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof Mob mob)) return;
 
-        long reward = ShopRewards.getMobReward(event.getEntity().getType());
-        if (reward > 0) {
-            long finalReward = RankManager.applyMultiplier(player, reward);
+        long baseMoney = ShopRewards.getMobReward(event.getEntity().getType());
+        if (baseMoney > 0) {
+            long finalReward = MobRewardsHelper.calculateMoneyReward(player, mob, baseMoney);
             ModAttachments.addMoney(player, finalReward);
         }
     }
 
-    /** Aplica el multiplicador de XP al dropear XP de mobs */
+    /** Aplica el multiplicador de XP + nivel del mob al dropear XP de mobs */
     @SubscribeEvent
     public static void onLivingXpDrop(LivingExperienceDropEvent event) {
         if (!(event.getAttackingPlayer() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof Mob mob)) return;
+
         int vanillaXp = event.getDroppedExperience();
         if (vanillaXp <= 0) return;
 
-        int multiplier = RankManager.getXpMultiplier(ModAttachments.getRank(player));
-        if (multiplier <= 1) return;
-
-        event.setDroppedExperience(vanillaXp * multiplier);
+        int finalXp = MobRewardsHelper.calculateXpReward(player, mob, vanillaXp);
+        event.setDroppedExperience(finalXp);
     }
 
     // ===== DINERO AL PESCAR =====

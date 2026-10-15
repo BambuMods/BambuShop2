@@ -2,6 +2,7 @@ package com.bambumods.bambushop.event;
 
 import com.bambumods.bambushop.BambuShop;
 import com.bambumods.bambushop.attachment.ModAttachments;
+import com.bambumods.bambushop.mob.MobLevelHelper;
 import com.bambumods.bambushop.mob.MobNameHelper;
 import com.bambumods.bambushop.mob.MobStatsHelper;
 import net.minecraft.world.entity.Mob;
@@ -17,8 +18,8 @@ public class MobLevelEvents {
         if (!(event.getEntity() instanceof Mob mob)) return;
         if (mob.level().isClientSide()) return;
 
-        // Asignar nivel
-        int level = 1 + mob.getRandom().nextInt(20);
+        // Calcular nivel según el rango del jugador más cercano
+        int level = MobLevelHelper.calculateLevelForMob(mob);
         ModAttachments.setMobLevel(mob, level);
 
         // Aplicar nombre con color
