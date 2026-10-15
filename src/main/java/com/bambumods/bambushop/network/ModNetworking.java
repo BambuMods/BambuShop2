@@ -13,40 +13,20 @@ public class ModNetworking {
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
 
-        registrar.playToServer(
-                RankUpPacket.TYPE,
-                RankUpPacket.STREAM_CODEC,
-                RankUpPacket::handle
-        );
+        // ===== Cliente → Servidor =====
+        registrar.playToServer(RankUpPacket.TYPE, RankUpPacket.STREAM_CODEC, RankUpPacket::handle);
+        registrar.playToServer(OpenRankGuiPacket.TYPE, OpenRankGuiPacket.STREAM_CODEC, OpenRankGuiPacket::handle);
+        registrar.playToServer(OpenShopCategoriesPacket.TYPE, OpenShopCategoriesPacket.STREAM_CODEC, OpenShopCategoriesPacket::handle);
+        registrar.playToServer(OpenShopCategoryPacket.TYPE, OpenShopCategoryPacket.STREAM_CODEC, OpenShopCategoryPacket::handle);
+        registrar.playToServer(OpenShopCategoryItemPacket.TYPE, OpenShopCategoryItemPacket.STREAM_CODEC, OpenShopCategoryItemPacket::handle);
+        registrar.playToServer(BuyItemPacket.TYPE, BuyItemPacket.STREAM_CODEC, BuyItemPacket::handle);
+        registrar.playToServer(OpenSellGuiPacket.TYPE, OpenSellGuiPacket.STREAM_CODEC, OpenSellGuiPacket::handle);
+        registrar.playToServer(SellItemPacket.TYPE, SellItemPacket.STREAM_CODEC, SellItemPacket::handle);
 
-        registrar.playToServer(
-                OpenRankGuiPacket.TYPE,
-                OpenRankGuiPacket.STREAM_CODEC,
-                OpenRankGuiPacket::handle
-        );
-
-        registrar.playToServer(
-                OpenShopCategoriesPacket.TYPE,
-                OpenShopCategoriesPacket.STREAM_CODEC,
-                OpenShopCategoriesPacket::handle
-        );
-
-        registrar.playToServer(
-                OpenShopCategoryPacket.TYPE,
-                OpenShopCategoryPacket.STREAM_CODEC,
-                OpenShopCategoryPacket::handle
-        );
-
-        registrar.playToServer(
-                OpenShopCategoryItemPacket.TYPE,
-                OpenShopCategoryItemPacket.STREAM_CODEC,
-                OpenShopCategoryItemPacket::handle
-        );
-
-        registrar.playToServer(
-                BuyItemPacket.TYPE,
-                BuyItemPacket.STREAM_CODEC,
-                BuyItemPacket::handle
-        );
+        // ===== Servidor → Cliente =====
+        // Solo se registra el TIPO y el CODEC.
+        // El handler REAL se registra en ClientEvents con RegisterClientPayloadHandlersEvent.
+        registrar.playToClient(TransactionFeedbackPacket.TYPE, TransactionFeedbackPacket.STREAM_CODEC);
+        registrar.playToClient(SyncMoneyPacket.TYPE, SyncMoneyPacket.STREAM_CODEC);
     }
 }

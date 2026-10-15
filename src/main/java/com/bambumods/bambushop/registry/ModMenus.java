@@ -3,6 +3,7 @@ package com.bambumods.bambushop.registry;
 import com.bambumods.bambushop.BambuShop;
 import com.bambumods.bambushop.menu.MainMenu;
 import com.bambumods.bambushop.menu.RankMenu;
+import com.bambumods.bambushop.menu.SellMenu;
 import com.bambumods.bambushop.menu.ShopCategoriesMenu;
 import com.bambumods.bambushop.menu.ShopCategoryMenu;
 import com.bambumods.bambushop.menu.ShopQuantityMenu;
@@ -32,6 +33,9 @@ public class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<ShopQuantityMenu>> SHOP_QUANTITY =
             MENUS.register("shop_quantity", () -> IMenuTypeExtension.create(ShopQuantityMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<SellMenu>> SELL_MENU =
+            MENUS.register("sell_menu", () -> IMenuTypeExtension.create(SellMenu::new));
 
     public static void register(IEventBus modBus) {
         MENUS.register(modBus);

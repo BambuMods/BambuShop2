@@ -1,10 +1,9 @@
 package com.bambumods.bambushop.client.gui;
 
-import com.bambumods.bambushop.attachment.ModAttachments;
 import com.bambumods.bambushop.menu.ShopQuantityMenu;
 import com.bambumods.bambushop.network.BuyItemPacket;
+import com.bambumods.bambushop.network.OpenShopCategoriesPacket;
 import com.bambumods.bambushop.shop.ShopEntry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -18,11 +17,18 @@ public class ShopQuantityScreen extends AbstractContainerScreen<ShopQuantityMenu
     private static final int GUI_HEIGHT = 240;
 
     private int quantity = 1;
+    private long currentMoney;
 
     public ShopQuantityScreen(ShopQuantityMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
         this.imageWidth = GUI_WIDTH;
         this.imageHeight = GUI_HEIGHT;
+        this.currentMoney = menu.getMoney();
+    }
+
+    /** Llamado desde el cliente cuando llega un SyncMoneyPacket */
+    public void updateMoney(long newMoney) {
+        this.currentMoney = newMoney;
     }
 
     @Override
@@ -50,14 +56,14 @@ public class ShopQuantityScreen extends AbstractContainerScreen<ShopQuantityMenu
         this.addRenderableWidget(Button.builder(Component.literal("+64"), b -> change(64))
                 .bounds(x + 150, y + 120, 50, 20).build());
 
-        // Botón Volver (izquierda)
+        // Botón Volver
         this.addRenderableWidget(Button.builder(Component.literal("⬅ Volver"), b -> {
                     net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
-                            new com.bambumods.bambushop.network.OpenShopCategoriesPacket());
+                            new OpenShopCategoriesPacket());
                 })
                 .bounds(x + 15, y + GUI_HEIGHT - 28, 80, 20).build());
 
-        // Botón Comprar (derecha)
+        // Botón Comprar
         this.addRenderableWidget(Button.builder(Component.literal("✔ Comprar"), b -> {
                     if (menu.getEntry() == null) return;
                     net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
@@ -78,6 +84,7 @@ public class ShopQuantityScreen extends AbstractContainerScreen<ShopQuantityMenu
         int x = this.leftPos;
         int y = this.topPos;
 
+        // Cabecera
         g.fill(x, y, x + GUI_WIDTH, y + 26, 0xFF2A411F);
         g.fill(x, y + 26, x + GUI_WIDTH, y + 27, 0xFF7BA05B);
 
@@ -94,11 +101,13 @@ public class ShopQuantityScreen extends AbstractContainerScreen<ShopQuantityMenu
             return;
         }
 
+        // Icono grande en el centro
         ItemStack stack = entry.createStack();
         int iconX = x + GUI_WIDTH / 2 - 16;
         g.renderItem(stack, iconX, y + 45);
         g.renderItemDecorations(this.font, stack, iconX, y + 45);
 
+        // Cantidad
         String qtyText = "x" + quantity;
         int qtyWidth = this.font.width(qtyText);
         g.drawString(this.font, qtyText,
@@ -106,6 +115,7 @@ public class ShopQuantityScreen extends AbstractContainerScreen<ShopQuantityMenu
                 y + 70,
                 0xFFFFF0D0, true);
 
+        // Total
         long total = entry.getPrice() * quantity;
         String totalText = "Total: " + ShopHudOverlay.formatMoney(total) + " $";
         int totalWidth = this.font.width(totalText);
@@ -114,17 +124,20 @@ public class ShopQuantityScreen extends AbstractContainerScreen<ShopQuantityMenu
                 y + 155,
                 0xFFFFD75E, true);
 
-        long money = ModAttachments.getMoney(Minecraft.getInstance().player);
-        String moneyText = "Tienes: " + ShopHudOverlay.formatMoney(money) + " $";
+        // Dinero del jugador (usa currentMoney, no ModAttachments)
+        String moneyText = "Tienes: " + ShopHudOverlay.formatMoney(currentMoney) + " $";
         int moneyWidth = this.font.width(moneyText);
-        int moneyColor = (money >= total) ? 0xFF7BFF7B : 0xFFFF5555;
+        int moneyColor = (currentMoney >= total) ? 0xFF7BFF7B : 0xFFFF5555;
         g.drawString(this.font, moneyText,
                 x + (GUI_WIDTH - moneyWidth) / 2,
                 y + 172,
                 moneyColor, true);
 
+        // Cartel dinero/rango (usa currentMoney)
+        ShopHudOverlay.renderAt(g, x, y - 40, currentMoney, menu.getRank());
+
+        // Notificaciones flotantes
         ShopNotifications.render(g, this.width, y);
-        ShopHudOverlay.render(g, x, y, GUI_WIDTH, menu.getMoney(), menu.getRank());
     }
 
     @Override

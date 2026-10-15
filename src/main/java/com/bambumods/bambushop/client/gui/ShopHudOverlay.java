@@ -6,9 +6,9 @@ import net.minecraft.client.gui.GuiGraphics;
 
 public class ShopHudOverlay {
 
+    /** Versión estándar: se dibuja justo encima de la GUI, alineado a la derecha */
     public static void render(GuiGraphics g, int guiLeft, int guiTop, int guiWidth, long money, int rankLevel) {
         Minecraft mc = Minecraft.getInstance();
-
         RankData rank = RankData.getByLevel(rankLevel);
         String rankName = (rank != null) ? rank.getName() : "Sin Rango";
 
@@ -21,6 +21,29 @@ public class ShopHudOverlay {
 
         int bx = guiLeft + guiWidth - boxWidth;
         int by = guiTop - boxHeight - 4;
+
+        drawBox(g, bx, by, boxWidth, boxHeight, moneyLine, rankLine);
+    }
+
+    /** Versión custom: se dibuja en una posición concreta (x, y) */
+    public static void renderAt(GuiGraphics g, int x, int y, long money, int rankLevel) {
+        Minecraft mc = Minecraft.getInstance();
+        RankData rank = RankData.getByLevel(rankLevel);
+        String rankName = (rank != null) ? rank.getName() : "Sin Rango";
+
+        String moneyLine = "💰 " + formatMoney(money) + " $";
+        String rankLine = "🎖 " + rankName;
+
+        int textWidth = Math.max(mc.font.width(moneyLine), mc.font.width(rankLine));
+        int boxWidth = textWidth + 20;
+        int boxHeight = 32;
+
+        drawBox(g, x, y, boxWidth, boxHeight, moneyLine, rankLine);
+    }
+
+    private static void drawBox(GuiGraphics g, int bx, int by, int boxWidth, int boxHeight,
+                                String moneyLine, String rankLine) {
+        Minecraft mc = Minecraft.getInstance();
 
         g.fill(bx, by, bx + boxWidth, by + boxHeight, 0xE03E2A1A);
         int border = 0xFF7BA05B;

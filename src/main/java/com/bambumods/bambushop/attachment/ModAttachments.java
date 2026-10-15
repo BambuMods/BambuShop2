@@ -2,6 +2,7 @@ package com.bambumods.bambushop.attachment;
 
 import com.bambumods.bambushop.BambuShop;
 import com.mojang.serialization.Codec;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -30,6 +31,23 @@ public class ModAttachments {
             () -> AttachmentType.builder(() -> 0)
                     .serialize(Codec.INT.fieldOf("rank"))
                     .copyOnDeath()
+                    .build()
+    );
+
+    /** Prestigio del jugador (0 = sin prestigio, 1, 2, 3...). Persiste al morir. */
+    public static final Supplier<AttachmentType<Integer>> PRESTIGE = ATTACHMENT_TYPES.register(
+            "prestige",
+            () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("prestige"))
+                    .copyOnDeath()
+                    .build()
+    );
+
+    /** Nivel del mob (1-20). NO persiste al morir (el mob muere con él). */
+    public static final Supplier<AttachmentType<Integer>> MOB_LEVEL = ATTACHMENT_TYPES.register(
+            "mob_level",
+            () -> AttachmentType.builder(() -> 1)
+                    .serialize(Codec.INT.fieldOf("mob_level"))
                     .build()
     );
 
@@ -69,5 +87,29 @@ public class ModAttachments {
 
     public static void addRank(Player player, int amount) {
         setRank(player, getRank(player) + amount);
+    }
+
+    // ===== PRESTIGIO =====
+    public static int getPrestige(Player player) {
+        return player.getData(PRESTIGE);
+    }
+
+    public static void setPrestige(Player player, int prestige) {
+        int clamped = Math.max(0, prestige);
+        player.setData(PRESTIGE, clamped);
+    }
+
+    public static void addPrestige(Player player, int amount) {
+        setPrestige(player, getPrestige(player) + amount);
+    }
+
+    // ===== NIVEL DEL MOB =====
+    public static int getMobLevel(Entity entity) {
+        return entity.getData(MOB_LEVEL);
+    }
+
+    public static void setMobLevel(Entity entity, int level) {
+        int clamped = Math.max(1, Math.min(20, level));
+        entity.setData(MOB_LEVEL, clamped);
     }
 }

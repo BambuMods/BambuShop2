@@ -3,26 +3,18 @@ package com.bambumods.bambushop.shop;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Categorías de la tienda.
- * BUY  = categorías de COMPRA (7)
- * SELL = categorías de VENTA (3)
- */
 public enum ShopCategory {
 
-    // ===== COMPRA =====
+    // ===== COMPRA (6 categorías) =====
     BUY_BLOQUES("bloques", "Bloques", Side.BUY),
-    BUY_MINERALES("minerales", "Minerales", Side.BUY),
     BUY_COMIDA("comida", "Comida", Side.BUY),
     BUY_POCIONES("pociones", "Pociones", Side.BUY),
     BUY_COMBATE("combate", "Combate", Side.BUY),
     BUY_UTILERIA("utileria", "Utilería", Side.BUY),
     BUY_ESPECIALES("especiales", "Especiales", Side.BUY),
 
-    // ===== VENTA =====
-    SELL_MINERALES("sell_minerales", "Minerales", Side.SELL),
-    SELL_DROPS_MOBS("sell_drops_mobs", "Drops de mobs", Side.SELL),
-    SELL_DROPS_ESPECIALES("sell_drops_especiales", "Drops especiales", Side.SELL);
+    // ===== VENTA (1 sola categoría, se accede desde un único botón) =====
+    SELL("sell", "Vender", Side.SELL);
 
     public enum Side { BUY, SELL }
 

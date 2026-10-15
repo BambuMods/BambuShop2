@@ -8,10 +8,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record BuyItemPacket(String itemId, int quantity) implements CustomPacketPayload {
@@ -46,29 +46,33 @@ public record BuyItemPacket(String itemId, int quantity) implements CustomPacket
             long money = ModAttachments.getMoney(player);
 
             if (money < totalCost) {
-                player.displayClientMessage(
-                        Component.literal("§c✘ No tienes suficiente dinero (necesitas "
-                                + formatMoney(totalCost) + "$, tienes " + formatMoney(money) + "$)"),
-                        false);
+                PacketDistributor.sendToPlayer(player,
+                        new TransactionFeedbackPacket(
+                                "✘ No tienes suficiente dinero (necesitas "
+                                        + formatMoney(totalCost) + "$, tienes " + formatMoney(money) + "$)",
+                                1));
                 return;
             }
 
             ItemStack toAdd = entry.createStack();
             toAdd.setCount(packet.quantity);
             if (!player.getInventory().add(toAdd)) {
-                player.displayClientMessage(
-                        Component.literal("§c✘ Inventario lleno"),
-                        false);
+                PacketDistributor.sendToPlayer(player,
+                        new TransactionFeedbackPacket("✘ Inventario lleno", 1));
                 return;
             }
 
             ModAttachments.takeMoney(player, totalCost);
 
-            player.displayClientMessage(
-                    Component.literal("§a✔ Compraste " + packet.quantity + " x "
-                            + entry.createStack().getHoverName().getString()
-                            + " por " + formatMoney(totalCost) + "$"),
-                    false);
+            PacketDistributor.sendToPlayer(player,
+                    new TransactionFeedbackPacket(
+                            "✔ Compraste " + packet.quantity + " x "
+                                    + entry.createStack().getHoverName().getString()
+                                    + " por " + formatMoney(totalCost) + "$",
+                            0));
+
+            PacketDistributor.sendToPlayer(player,
+                    new SyncMoneyPacket(ModAttachments.getMoney(player)));
         });
     }
 

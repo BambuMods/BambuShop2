@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 public class ShopQuantityMenu extends AbstractContainerMenu {
 
     private final ShopEntry entry;
-    private final long money;
+    private long money;
     private final int rank;
 
     public ShopQuantityMenu(int containerId, Inventory inv, ServerPlayer player, ShopEntry entry) {
@@ -36,6 +36,7 @@ public class ShopQuantityMenu extends AbstractContainerMenu {
 
     public ShopEntry getEntry() { return entry; }
     public long getMoney() { return money; }
+    public void setMoney(long money) { this.money = money; }
     public int getRank() { return rank; }
 
     @Override

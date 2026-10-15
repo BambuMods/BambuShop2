@@ -1,6 +1,7 @@
 package com.bambumods.bambushop.client.gui;
 
 import com.bambumods.bambushop.menu.ShopCategoriesMenu;
+import com.bambumods.bambushop.network.OpenSellGuiPacket;
 import com.bambumods.bambushop.network.OpenShopCategoryPacket;
 import com.bambumods.bambushop.shop.ShopCategory;
 import net.minecraft.client.gui.GuiGraphics;
@@ -31,6 +32,7 @@ public class ShopCategoriesScreen extends AbstractContainerScreen<ShopCategories
         int x = this.leftPos;
         int y = this.topPos;
 
+        // Botones de COMPRA (6 categorías en 2 columnas)
         List<ShopCategory> buyCats = ShopCategory.getBuyCategories();
         int buyStartY = y + 48;
         for (int i = 0; i < buyCats.size(); i++) {
@@ -49,20 +51,18 @@ public class ShopCategoriesScreen extends AbstractContainerScreen<ShopCategories
             );
         }
 
-        List<ShopCategory> sellCats = ShopCategory.getSellCategories();
-        int sellTitleY = buyStartY + ((buyCats.size() + 1) / 2) * 24 + 10;
-        int sellStartY = sellTitleY + 14;
-        for (int i = 0; i < sellCats.size(); i++) {
-            ShopCategory cat = sellCats.get(i);
-            int bx = x + 10 + (i % 2) * 124;
-            int by = sellStartY + (i / 2) * 24;
-            this.addRenderableWidget(
-                    Button.builder(Component.literal(cat.getDisplayName()), b -> {})
-                            .bounds(bx, by, 118, 20)
-                            .build()
-            );
-        }
+        // Botón grande VENDER
+        int sellY = buyStartY + ((buyCats.size() + 1) / 2) * 24 + 14;
+        this.addRenderableWidget(
+                Button.builder(Component.literal("💰 VENDER 💰"), b -> {
+                            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
+                                    OpenSellGuiPacket.INSTANCE);
+                        })
+                        .bounds(x + 30, sellY, 200, 28)
+                        .build()
+        );
 
+        // Botón Cerrar
         this.addRenderableWidget(
                 Button.builder(Component.literal("Cerrar"), b -> this.onClose())
                         .bounds(x + GUI_WIDTH - 62, y + GUI_HEIGHT - 24, 52, 18)
@@ -92,8 +92,8 @@ public class ShopCategoriesScreen extends AbstractContainerScreen<ShopCategories
 
         List<ShopCategory> buyCats = ShopCategory.getBuyCategories();
         int buyStartY = y + 48;
-        int sellTitleY = buyStartY + ((buyCats.size() + 1) / 2) * 24 + 10;
-        g.drawString(this.font, "VENDER", x + 10, sellTitleY, 0xFFFF5555, true);
+        int sellTitleY = buyStartY + ((buyCats.size() + 1) / 2) * 24 + 14;
+        g.drawString(this.font, "VENDER", x + 10, sellTitleY - 12, 0xFFFF5555, true);
 
         ShopHudOverlay.render(g, x, y, GUI_WIDTH, menu.getMoney(), menu.getRank());
     }
