@@ -3,6 +3,7 @@ package com.bambumods.bambushop.event;
 import com.bambumods.bambushop.BambuShop;
 import com.bambumods.bambushop.attachment.ModAttachments;
 import com.bambumods.bambushop.mob.LootDropHelper;
+import com.bambumods.bambushop.mob.MobOpHelper;
 import com.bambumods.bambushop.mob.PassiveLootHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,23 +28,35 @@ public class LootDropEvents {
         if (!(mob.level() instanceof ServerLevel serverLevel)) return;
 
         int level = ModAttachments.getMobLevel(mob);
+        int opTypeId = ModAttachments.getMobOpType(mob);
+        MobOpHelper.MobOpType opType = MobOpHelper.MobOpType.fromId(opTypeId);
 
-        System.out.println("[BambuShop] Mob muerto: " + mob.getType() + " nivel " + level
-                + " | Es Monster: " + (mob instanceof Monster)
-                + " | Es Animal: " + (mob instanceof Animal));
-
-        // Hostiles → drops chetados
+        // Hostiles
         if (mob instanceof Monster) {
-            ItemStack drop = LootDropHelper.generateLootDrop(serverLevel, level);
-            System.out.println("[BambuShop] -> Drop chetado generado: " + (drop != null ? drop.getHoverName().getString() : "null"));
-            if (drop != null) {
-                giveToPlayerOrDrop(player, drop);
+            if (opType == MobOpHelper.MobOpType.NORMAL) {
+                // Drop normal (probabilidad)
+                ItemStack drop = LootDropHelper.generateLootDrop(serverLevel, level);
+                if (drop != null) {
+                    giveToPlayerOrDrop(player, drop);
+                }
+            } else {
+                // Mob OP: 2 items garantizados con encantamientos altos
+                int minEnch, maxEnch;
+                switch (opType) {
+                    case EPICO -> { minEnch = 40; maxEnch = 55; }
+                    case LEGENDARIO -> { minEnch = 50; maxEnch = 65; }
+                    case MITICO -> { minEnch = 60; maxEnch = 80; }
+                    default -> { minEnch = 1; maxEnch = 8; }
+                }
+                ItemStack drop1 = LootDropHelper.generateOpLootDrop(serverLevel, level, minEnch, maxEnch);
+                ItemStack drop2 = LootDropHelper.generateOpLootDrop(serverLevel, level, minEnch, maxEnch);
+                if (drop1 != null) giveToPlayerOrDrop(player, drop1);
+                if (drop2 != null) giveToPlayerOrDrop(player, drop2);
             }
         }
         // Pasivos → items de rankeo
         else if (mob instanceof Animal) {
             List<ItemStack> drops = PassiveLootHelper.generateRankItems(level);
-            System.out.println("[BambuShop] -> Items de rankeo: " + drops.size());
             for (ItemStack drop : drops) {
                 giveToPlayerOrDrop(player, drop);
             }

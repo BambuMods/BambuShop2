@@ -5,6 +5,7 @@ import com.bambumods.bambushop.attachment.ModAttachments;
 import com.bambumods.bambushop.config.ShopRewards;
 import com.bambumods.bambushop.mob.MobRewardsHelper;
 import com.bambumods.bambushop.rank.RankManager;
+import com.bambumods.bambushop.shop.AutoSellHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
@@ -42,24 +43,41 @@ public class MoneyEvents {
 
         if (reward > 0) {
             long withRank = RankManager.applyMultiplier(player, reward);
-            // Factor aleatorio 1.0 - 10.0
             double randomFactor = 1.0 + (RANDOM.nextDouble() * 9.0);
             long finalReward = (long) (withRank * randomFactor);
             ModAttachments.addMoney(player, finalReward);
         }
     }
 
-    /** Aplica el multiplicador de XP al dropear XP de bloques (minerales) */
+    /** Aplica XP al dropear bloques + auto-sell si está activado */
     @SubscribeEvent
     public static void onBlockDrops(BlockDropsEvent event) {
         if (!(event.getBreaker() instanceof ServerPlayer player)) return;
+
+        // XP
         int vanillaXp = event.getDroppedExperience();
-        if (vanillaXp <= 0) return;
+        if (vanillaXp > 0) {
+            int multiplier = RankManager.getXpMultiplier(ModAttachments.getRank(player));
+            if (multiplier > 1) {
+                event.setDroppedExperience(vanillaXp * multiplier);
+            }
+        }
 
-        int multiplier = RankManager.getXpMultiplier(ModAttachments.getRank(player));
-        if (multiplier <= 1) return;
-
-        event.setDroppedExperience(vanillaXp * multiplier);
+        // Auto-sell
+        if (AutoSellHelper.isEnabled(player)) {
+            long totalMoney = 0;
+            for (var itemEntity : event.getDrops()) {
+                ItemStack drop = itemEntity.getItem();
+                long value = AutoSellHelper.calculateSellValue(player, drop);
+                if (value > 0) {
+                    totalMoney += value;
+                }
+            }
+            if (totalMoney > 0) {
+                ModAttachments.addMoney(player, totalMoney);
+                event.getDrops().clear();
+            }
+        }
     }
 
     // ===== DINERO AL MATAR MOBS =====
@@ -77,7 +95,7 @@ public class MoneyEvents {
         }
     }
 
-    /** Aplica el multiplicador de XP + nivel del mob al dropear XP de mobs */
+    /** Aplica multiplicador de XP + nivel del mob al dropear XP de mobs */
     @SubscribeEvent
     public static void onLivingXpDrop(LivingExperienceDropEvent event) {
         if (!(event.getAttackingPlayer() instanceof ServerPlayer player)) return;
@@ -96,11 +114,27 @@ public class MoneyEvents {
     public static void onFish(ItemFishedEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
+        // Auto-sell
+        if (AutoSellHelper.isEnabled(player)) {
+            long totalMoney = 0;
+            for (ItemStack drop : event.getDrops()) {
+                long value = AutoSellHelper.calculateSellValue(player, drop);
+                if (value > 0) {
+                    totalMoney += value;
+                }
+            }
+            if (totalMoney > 0) {
+                ModAttachments.addMoney(player, totalMoney);
+                event.getDrops().clear();
+            }
+            return;
+        }
+
+        // Sin auto-sell: dinero normal por pesca
         for (ItemStack drop : event.getDrops()) {
             long reward = ShopRewards.getFishReward(drop);
             if (reward > 0) {
                 long withRank = RankManager.applyMultiplier(player, reward);
-                // Factor aleatorio 1.0 - 5.0
                 double randomFactor = 1.0 + (RANDOM.nextDouble() * 4.0);
                 long finalReward = (long) (withRank * randomFactor);
                 ModAttachments.addMoney(player, finalReward);

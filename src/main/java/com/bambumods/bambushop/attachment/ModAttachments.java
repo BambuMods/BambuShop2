@@ -16,7 +16,6 @@ public class ModAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, BambuShop.MOD_ID);
 
-    /** Dinero del jugador. Persiste al morir. */
     public static final Supplier<AttachmentType<Long>> MONEY = ATTACHMENT_TYPES.register(
             "money",
             () -> AttachmentType.builder(() -> 0L)
@@ -25,7 +24,6 @@ public class ModAttachments {
                     .build()
     );
 
-    /** Rango del jugador (0 = sin rango, 1-20). Persiste al morir. */
     public static final Supplier<AttachmentType<Integer>> RANK = ATTACHMENT_TYPES.register(
             "rank",
             () -> AttachmentType.builder(() -> 0)
@@ -34,20 +32,25 @@ public class ModAttachments {
                     .build()
     );
 
-    /** Prestigio del jugador (0 = sin prestigio, 1, 2, 3...). Persiste al morir. */
-    public static final Supplier<AttachmentType<Integer>> PRESTIGE = ATTACHMENT_TYPES.register(
-            "prestige",
-            () -> AttachmentType.builder(() -> 0)
-                    .serialize(Codec.INT.fieldOf("prestige"))
-                    .copyOnDeath()
-                    .build()
-    );
-
-    /** Nivel del mob (1-20). NO persiste al morir (el mob muere con él). */
     public static final Supplier<AttachmentType<Integer>> MOB_LEVEL = ATTACHMENT_TYPES.register(
             "mob_level",
             () -> AttachmentType.builder(() -> 1)
                     .serialize(Codec.INT.fieldOf("mob_level"))
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<Integer>> MOB_OP_TYPE = ATTACHMENT_TYPES.register(
+            "mob_op_type",
+            () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("mob_op_type"))
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<Boolean>> AUTO_SELL = ATTACHMENT_TYPES.register(
+            "auto_sell",
+            () -> AttachmentType.builder(() -> false)
+                    .serialize(Codec.BOOL.fieldOf("auto_sell"))
+                    .copyOnDeath()
                     .build()
     );
 
@@ -89,20 +92,6 @@ public class ModAttachments {
         setRank(player, getRank(player) + amount);
     }
 
-    // ===== PRESTIGIO =====
-    public static int getPrestige(Player player) {
-        return player.getData(PRESTIGE);
-    }
-
-    public static void setPrestige(Player player, int prestige) {
-        int clamped = Math.max(0, prestige);
-        player.setData(PRESTIGE, clamped);
-    }
-
-    public static void addPrestige(Player player, int amount) {
-        setPrestige(player, getPrestige(player) + amount);
-    }
-
     // ===== NIVEL DEL MOB =====
     public static int getMobLevel(Entity entity) {
         return entity.getData(MOB_LEVEL);
@@ -111,5 +100,28 @@ public class ModAttachments {
     public static void setMobLevel(Entity entity, int level) {
         int clamped = Math.max(1, Math.min(20, level));
         entity.setData(MOB_LEVEL, clamped);
+    }
+
+    // ===== TIPO DE MOB OP =====
+    public static int getMobOpType(Entity entity) {
+        return entity.getData(MOB_OP_TYPE);
+    }
+
+    public static void setMobOpType(Entity entity, int type) {
+        int clamped = Math.max(0, Math.min(3, type));
+        entity.setData(MOB_OP_TYPE, clamped);
+    }
+
+    // ===== AUTO-SELL =====
+    public static boolean isAutoSell(Player player) {
+        return player.getData(AUTO_SELL);
+    }
+
+    public static void setAutoSell(Player player, boolean value) {
+        player.setData(AUTO_SELL, value);
+    }
+
+    public static void toggleAutoSell(Player player) {
+        setAutoSell(player, !isAutoSell(player));
     }
 }

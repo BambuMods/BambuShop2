@@ -50,41 +50,19 @@ public record SellItemPacket(int amount) implements CustomPacketPayload {
                 return;
             }
 
-            // Cuenta los items del inventario + los del slot
-            int invCount = countInInventory(player, slotStack);
-            int slotCount = slotStack.getCount();
-            int totalAvailable = invCount + slotCount;
+            int available = countInInventory(player, slotStack);
+            int toSell = Math.min(packet.amount, available);
 
-            int toSell = Math.min(packet.amount, totalAvailable);
             if (toSell <= 0) {
                 PacketDistributor.sendToPlayer(player,
                         new TransactionFeedbackPacket("✘ No tienes items de ese tipo", 1));
                 return;
             }
 
-            // Primero quitamos del slot si hace falta
-            int remaining = toSell;
-            int fromSlot = Math.min(slotCount, remaining);
-            if (fromSlot > 0) {
-                int newSlotCount = slotCount - fromSlot;
-                if (newSlotCount > 0) {
-                    ItemStack newSlot = slotStack.copy();
-                    newSlot.setCount(newSlotCount);
-                    sellMenu.getSellSlot().set(newSlot);
-                } else {
-                    sellMenu.getSellSlot().set(ItemStack.EMPTY);
-                }
-                remaining -= fromSlot;
-            }
-
-            // Luego quitamos del inventario
-            int fromInv = 0;
-            if (remaining > 0) {
-                fromInv = removeFromInventory(player, slotStack, remaining);
-            }
-
-            int removed = fromSlot + fromInv;
+            int removed = removeFromInventory(player, slotStack, toSell);
             long total = pricePerItem * removed;
+
+            // El slot no se vacía (se queda el item "marcado")
 
             ModAttachments.addMoney(player, total);
 
@@ -96,7 +74,11 @@ public record SellItemPacket(int amount) implements CustomPacketPayload {
                             0));
 
             PacketDistributor.sendToPlayer(player,
-                    new SyncMoneyPacket(ModAttachments.getMoney(player)));
+                    new SyncPlayerDataPacket(
+                            ModAttachments.getMoney(player),
+                            ModAttachments.getRank(player),
+                            ModAttachments.isAutoSell(player)
+                    ));
         });
     }
 

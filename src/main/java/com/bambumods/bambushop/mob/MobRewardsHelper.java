@@ -11,29 +11,27 @@ public class MobRewardsHelper {
 
     private static final Random RANDOM = new Random();
 
-    /**
-     * Calcula el dinero que da un mob al morir.
-     * Fórmula: baseMob × nivelMob × multiplicadorRango × aleatorio(1.0 - 5.0)
-     */
     public static long calculateMoneyReward(ServerPlayer player, Mob mob, long baseMoney) {
         int level = ModAttachments.getMobLevel(mob);
-        int rankMultiplier = RankManager.getMoneyMultiplier(player);
-        double randomFactor = 1.0 + (RANDOM.nextDouble() * 4.0); // entre 1.0 y 5.0
+        int opTypeId = ModAttachments.getMobOpType(mob);
+        MobOpHelper.MobOpType opType = MobOpHelper.MobOpType.fromId(opTypeId);
 
-        double reward = baseMoney * level * rankMultiplier * randomFactor;
+        int rankMultiplier = RankManager.getMoneyMultiplier(player);
+        double randomFactor = 1.0 + (RANDOM.nextDouble() * 4.0);
+
+        double reward = baseMoney * level * rankMultiplier * randomFactor * opType.moneyMult;
         return (long) reward;
     }
 
-    /**
-     * Calcula el XP que da un mob al morir.
-     * Fórmula: baseXp × nivelMob × multiplicadorRangoXp × aleatorio(1.0 - 3.0)
-     */
     public static int calculateXpReward(ServerPlayer player, Mob mob, int baseXp) {
         int level = ModAttachments.getMobLevel(mob);
-        int rankXpMultiplier = RankManager.getXpMultiplier(ModAttachments.getRank(player));
-        double randomFactor = 1.0 + (RANDOM.nextDouble() * 2.0); // entre 1.0 y 3.0
+        int opTypeId = ModAttachments.getMobOpType(mob);
+        MobOpHelper.MobOpType opType = MobOpHelper.MobOpType.fromId(opTypeId);
 
-        double xp = baseXp * level * rankXpMultiplier * randomFactor;
+        int rankXpMultiplier = RankManager.getXpMultiplier(ModAttachments.getRank(player));
+        double randomFactor = 1.0 + (RANDOM.nextDouble() * 2.0);
+
+        double xp = baseXp * level * rankXpMultiplier * randomFactor * opType.xpMult;
         return (int) xp;
     }
 }

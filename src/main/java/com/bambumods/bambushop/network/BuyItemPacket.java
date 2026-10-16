@@ -72,7 +72,11 @@ public record BuyItemPacket(String itemId, int quantity) implements CustomPacket
                             0));
 
             PacketDistributor.sendToPlayer(player,
-                    new SyncMoneyPacket(ModAttachments.getMoney(player)));
+                    new SyncPlayerDataPacket(
+                            ModAttachments.getMoney(player),
+                            ModAttachments.getRank(player),
+                            ModAttachments.isAutoSell(player)
+                    ));
         });
     }
 

@@ -2,7 +2,6 @@ package com.bambumods.bambushop.mob;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,22 +18,17 @@ public class LootDropHelper {
     private static final Random RANDOM = new Random();
 
     /**
-     * Genera el drop chetado de un mob hostil.
-     * Devuelve null si no hay drop.
+     * Drop normal (probabilidad).
      */
     public static ItemStack generateLootDrop(ServerLevel level, int mobLevel) {
-        // Probabilidad según nivel
         double dropChance;
         if (mobLevel <= 5) dropChance = 0.02;
         else if (mobLevel <= 10) dropChance = 0.05;
         else if (mobLevel <= 15) dropChance = 0.10;
         else dropChance = 0.15;
 
-        if (RANDOM.nextDouble() > dropChance) {
-            return null;
-        }
+        if (RANDOM.nextDouble() > dropChance) return null;
 
-        // Elegir tipo de item (1/7)
         int tipo = RANDOM.nextInt(7);
         Item item = switch (tipo) {
             case 0 -> getSwordMaterial(mobLevel);
@@ -49,9 +43,34 @@ public class LootDropHelper {
 
         ItemStack stack = new ItemStack(item);
 
-        // Aplicar encantamientos
-        applyEnchantments(level, stack, mobLevel);
+        int minEnch, maxEnch;
+        if (mobLevel <= 5) { minEnch = 1; maxEnch = 8; }
+        else if (mobLevel <= 10) { minEnch = 8; maxEnch = 18; }
+        else if (mobLevel <= 15) { minEnch = 18; maxEnch = 35; }
+        else { minEnch = 35; maxEnch = 55; }
 
+        applyEnchantments(level, stack, minEnch, maxEnch);
+        return stack;
+    }
+
+    /**
+     * Drop de mob OP: siempre Netherite, encantamientos entre minEnch y maxEnch.
+     */
+    public static ItemStack generateOpLootDrop(ServerLevel level, int mobLevel, int minEnch, int maxEnch) {
+        int tipo = RANDOM.nextInt(7);
+        Item item = switch (tipo) {
+            case 0 -> Items.NETHERITE_SWORD;
+            case 1 -> Items.NETHERITE_PICKAXE;
+            case 2 -> Items.NETHERITE_AXE;
+            case 3 -> Items.NETHERITE_CHESTPLATE;
+            case 4 -> Items.BOW;
+            case 5 -> Items.CROSSBOW;
+            case 6 -> Items.TRIDENT;
+            default -> Items.NETHERITE_SWORD;
+        };
+
+        ItemStack stack = new ItemStack(item);
+        applyEnchantments(level, stack, minEnch, maxEnch);
         return stack;
     }
 
@@ -79,22 +98,13 @@ public class LootDropHelper {
         return Items.NETHERITE_CHESTPLATE;
     }
 
-    private static void applyEnchantments(ServerLevel level, ItemStack stack, int mobLevel) {
-        // Rango de nivel del encantamiento según nivel del mob
-        int minEnch, maxEnch;
-        if (mobLevel <= 5) { minEnch = 1; maxEnch = 8; }
-        else if (mobLevel <= 10) { minEnch = 8; maxEnch = 18; }
-        else if (mobLevel <= 15) { minEnch = 18; maxEnch = 35; }
-        else { minEnch = 35; maxEnch = 55; }
-
-        // Elegir encantamiento principal
+    private static void applyEnchantments(ServerLevel level, ItemStack stack, int minEnch, int maxEnch) {
         Enchantment ench = getRandomEnchantment(stack, level);
         if (ench != null) {
             int nivelEnch = randomCampana(minEnch, maxEnch);
             stack.enchant(getHolder(level, ench), nivelEnch);
         }
 
-        // 30% probabilidad de secundario
         if (RANDOM.nextDouble() < 0.30) {
             Enchantment ench2 = getRandomEnchantment(stack, level);
             if (ench2 != null && ench2 != ench) {
@@ -103,7 +113,6 @@ public class LootDropHelper {
             }
         }
 
-        // 15% probabilidad de terciario
         if (RANDOM.nextDouble() < 0.15) {
             Enchantment ench3 = getRandomEnchantment(stack, level);
             if (ench3 != null && ench3 != ench) {
@@ -113,19 +122,16 @@ public class LootDropHelper {
         }
     }
 
-    /**
-     * Distribución campana tirando hacia arriba.
-     */
     private static int randomCampana(int min, int max) {
-        double r = RANDOM.nextDouble() * RANDOM.nextDouble(); // sesgado hacia abajo
-        double invertido = 1.0 - r; // sesgado hacia arriba
+        double r = RANDOM.nextDouble() * RANDOM.nextDouble();
+        double invertido = 1.0 - r;
         return min + (int) ((max - min) * invertido);
     }
 
     private static Enchantment getRandomEnchantment(ItemStack stack, ServerLevel level) {
         List<Enchantment> opciones = new ArrayList<>();
-
         var reg = level.registryAccess();
+
         if (stack.is(Items.NETHERITE_SWORD) || stack.is(Items.DIAMOND_SWORD) || stack.is(Items.IRON_SWORD)) {
             opciones.add(reg.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SHARPNESS).value());
             opciones.add(reg.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING).value());

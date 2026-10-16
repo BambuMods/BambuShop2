@@ -2,6 +2,7 @@ package com.bambumods.bambushop.client;
 
 import com.bambumods.bambushop.BambuShop;
 import com.bambumods.bambushop.client.gui.MainMenuScreen;
+import com.bambumods.bambushop.client.gui.MoneyHudOverlay;
 import com.bambumods.bambushop.client.gui.RankMenuScreen;
 import com.bambumods.bambushop.client.gui.SellScreen;
 import com.bambumods.bambushop.client.gui.ShopCategoriesScreen;
@@ -10,7 +11,7 @@ import com.bambumods.bambushop.client.gui.ShopNotifications;
 import com.bambumods.bambushop.client.gui.ShopQuantityScreen;
 import com.bambumods.bambushop.menu.SellMenu;
 import com.bambumods.bambushop.menu.ShopQuantityMenu;
-import com.bambumods.bambushop.network.SyncMoneyPacket;
+import com.bambumods.bambushop.network.SyncPlayerDataPacket;
 import com.bambumods.bambushop.network.TransactionFeedbackPacket;
 import com.bambumods.bambushop.registry.ModMenus;
 import net.minecraft.client.Minecraft;
@@ -18,6 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 
 @EventBusSubscriber(modid = BambuShop.MOD_ID, value = Dist.CLIENT)
@@ -39,22 +41,20 @@ public class ClientEvents {
             ctx.enqueueWork(() -> {
                 int t = packet.feedbackType();
                 String msg = packet.message();
-                if (t == 0) {
-                    ShopNotifications.success(msg);
-                } else if (t == 1) {
-                    ShopNotifications.error(msg);
-                } else {
-                    ShopNotifications.info(msg);
-                }
+                if (t == 0) ShopNotifications.success(msg);
+                else if (t == 1) ShopNotifications.error(msg);
+                else ShopNotifications.info(msg);
             });
         });
 
-        event.register(SyncMoneyPacket.TYPE, (packet, ctx) -> {
+        event.register(SyncPlayerDataPacket.TYPE, (packet, ctx) -> {
             ctx.enqueueWork(() -> {
+                // Actualizar cache del cliente
+                ClientPlayerDataCache.update(packet.money(), packet.rank(), packet.autoSell());
+
+                // Actualizar menú abierto (si hay)
                 var player = Minecraft.getInstance().player;
                 if (player == null) return;
-
-                // Actualizar el MENÚ (que es lo que lee la pantalla)
                 if (player.containerMenu instanceof SellMenu sellMenu) {
                     sellMenu.setMoney(packet.money());
                 } else if (player.containerMenu instanceof ShopQuantityMenu qMenu) {
@@ -62,5 +62,13 @@ public class ClientEvents {
                 }
             });
         });
+    }
+
+    @SubscribeEvent
+    public static void onRenderGui(RenderGuiEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen != null) return;
+        if (mc.player == null) return;
+        MoneyHudOverlay.render(event.getGuiGraphics(), mc.getWindow().getGuiScaledWidth());
     }
 }
