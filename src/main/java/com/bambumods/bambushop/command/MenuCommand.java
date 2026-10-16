@@ -19,6 +19,7 @@ public class MenuCommand {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
+        // /menu - TODOS pueden usarlo
         dispatcher.register(
                 Commands.literal("menu")
                         .executes(context -> {
@@ -37,8 +38,10 @@ public class MenuCommand {
                         })
         );
 
+        // /addmoney - SOLO OPs
         dispatcher.register(
                 Commands.literal("addmoney")
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(context -> {
                             if (context.getSource().getEntity() instanceof ServerPlayer player) {
                                 ModAttachments.addMoney(player, 100);

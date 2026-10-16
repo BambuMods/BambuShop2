@@ -20,9 +20,10 @@ public class RankCommand {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
-        // /myrank
+        // /myrank - SOLO OPs
         dispatcher.register(
                 Commands.literal("myrank")
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(context -> {
                             if (context.getSource().getEntity() instanceof ServerPlayer player) {
                                 int rank = ModAttachments.getRank(player);
@@ -33,9 +34,10 @@ public class RankCommand {
                         })
         );
 
-        // /setrank <n>
+        // /setrank <n> - SOLO OPs
         dispatcher.register(
                 Commands.literal("setrank")
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument("nivel", IntegerArgumentType.integer(0, 20))
                                 .executes(context -> {
                                     if (context.getSource().getEntity() instanceof ServerPlayer player) {
@@ -49,7 +51,7 @@ public class RankCommand {
                         )
         );
 
-        // /rankgui - Abre la GUI de rangos
+        // /rankgui - TODOS pueden usarlo
         dispatcher.register(
                 Commands.literal("rankgui")
                         .executes(context -> {
