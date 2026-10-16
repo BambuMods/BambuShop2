@@ -34,19 +34,17 @@ public class LootDropEvents {
         // Hostiles
         if (mob instanceof Monster) {
             if (opType == MobOpHelper.MobOpType.NORMAL) {
-                // Drop normal (probabilidad)
                 ItemStack drop = LootDropHelper.generateLootDrop(serverLevel, level);
                 if (drop != null) {
                     giveToPlayerOrDrop(player, drop);
                 }
             } else {
-                // Mob OP: 2 items garantizados con encantamientos altos
                 int minEnch, maxEnch;
                 switch (opType) {
-                    case EPICO -> { minEnch = 40; maxEnch = 55; }
-                    case LEGENDARIO -> { minEnch = 50; maxEnch = 65; }
-                    case MITICO -> { minEnch = 60; maxEnch = 80; }
-                    default -> { minEnch = 1; maxEnch = 8; }
+                    case EPICO -> { minEnch = 21; maxEnch = 23; }
+                    case LEGENDARIO -> { minEnch = 24; maxEnch = 26; }
+                    case MITICO -> { minEnch = 27; maxEnch = 30; }
+                    default -> { minEnch = 1; maxEnch = 5; }
                 }
                 ItemStack drop1 = LootDropHelper.generateOpLootDrop(serverLevel, level, minEnch, maxEnch);
                 ItemStack drop2 = LootDropHelper.generateOpLootDrop(serverLevel, level, minEnch, maxEnch);

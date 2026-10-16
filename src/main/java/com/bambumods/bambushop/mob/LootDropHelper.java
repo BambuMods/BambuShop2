@@ -17,9 +17,6 @@ public class LootDropHelper {
 
     private static final Random RANDOM = new Random();
 
-    /**
-     * Drop normal (probabilidad).
-     */
     public static ItemStack generateLootDrop(ServerLevel level, int mobLevel) {
         double dropChance;
         if (mobLevel <= 5) dropChance = 0.02;
@@ -44,18 +41,15 @@ public class LootDropHelper {
         ItemStack stack = new ItemStack(item);
 
         int minEnch, maxEnch;
-        if (mobLevel <= 5) { minEnch = 1; maxEnch = 8; }
-        else if (mobLevel <= 10) { minEnch = 8; maxEnch = 18; }
-        else if (mobLevel <= 15) { minEnch = 18; maxEnch = 35; }
-        else { minEnch = 35; maxEnch = 55; }
+        if (mobLevel <= 5) { minEnch = 1; maxEnch = 5; }
+        else if (mobLevel <= 10) { minEnch = 5; maxEnch = 10; }
+        else if (mobLevel <= 15) { minEnch = 10; maxEnch = 15; }
+        else { minEnch = 15; maxEnch = 20; }
 
         applyEnchantments(level, stack, minEnch, maxEnch);
         return stack;
     }
 
-    /**
-     * Drop de mob OP: siempre Netherite, encantamientos entre minEnch y maxEnch.
-     */
     public static ItemStack generateOpLootDrop(ServerLevel level, int mobLevel, int minEnch, int maxEnch) {
         int tipo = RANDOM.nextInt(7);
         Item item = switch (tipo) {
