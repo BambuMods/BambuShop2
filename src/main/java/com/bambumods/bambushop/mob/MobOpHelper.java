@@ -12,9 +12,9 @@ public class MobOpHelper {
 
     public enum MobOpType {
         NORMAL(0, "Normal", 1.0, 1.0, 1.0, 1.0, 0.0),
-        EPICO(1, "Épico", 3.0, 1.5, 5.0, 3.0, 15.0),
-        LEGENDARIO(2, "Legendario", 6.0, 2.5, 15.0, 6.0, 25.0),
-        MITICO(3, "Mítico", 12.0, 4.0, 50.0, 12.0, 35.0);
+        EPICO(1, "Épico", 2.0, 1.2, 5.0, 3.0, 15.0),
+        LEGENDARIO(2, "Legendario", 3.0, 1.5, 15.0, 6.0, 25.0),
+        MITICO(3, "Mítico", 5.0, 2.0, 50.0, 12.0, 35.0);
 
         public final int id;
         public final String displayName;
@@ -22,7 +22,7 @@ public class MobOpHelper {
         public final double damageMult;
         public final double moneyMult;
         public final double xpMult;
-        public final double armorPiercing; // % que ignora armadura
+        public final double armorPiercing;
 
         MobOpType(int id, String displayName, double hpMult, double damageMult,
                   double moneyMult, double xpMult, double armorPiercing) {
@@ -43,16 +43,9 @@ public class MobOpHelper {
         }
     }
 
-    /**
-     * Tira los dados para decidir si un mob es OP.
-     * - 1/50 → Épico (rango 5+)
-     * - 1/250 → Legendario (rango 10+)
-     * - 1/750 → Mítico (rango 15+)
-     */
     public static MobOpType rollMobOpType(ServerPlayer nearest) {
         int rank = (nearest != null) ? ModAttachments.getRank(nearest) : 0;
 
-        // Tirada del Mítico primero (más raro)
         if (rank >= 15 && RANDOM.nextInt(750) == 0) {
             return MobOpType.MITICO;
         }

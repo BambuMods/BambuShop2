@@ -7,7 +7,6 @@ import net.minecraft.world.item.ItemStack;
 
 public class RankManager {
 
-    /** Cuántos objetos tiene el jugador de un item concreto */
     public static int countItem(ServerPlayer player, RankRequirement req) {
         int count = 0;
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
@@ -19,7 +18,6 @@ public class RankManager {
         return count;
     }
 
-    /** Comprueba si el jugador cumple TODOS los requisitos para subir al siguiente rango */
     public static boolean canRankUp(ServerPlayer player) {
         int current = ModAttachments.getRank(player);
         RankData next = RankData.getNext(current);
@@ -35,7 +33,6 @@ public class RankManager {
         return true;
     }
 
-    /** Consume los recursos y sube al jugador de rango. Devuelve true si tuvo éxito. */
     public static boolean rankUp(ServerPlayer player) {
         if (!canRankUp(player)) return false;
 
@@ -51,14 +48,10 @@ public class RankManager {
         }
 
         ModAttachments.setRank(player, next.getLevel());
-
-        // NUEVO (FASE 4.6): aplicar los stats del nuevo rango
         RankAttributeEvents.applyRankAttributes(player);
-
         return true;
     }
 
-    /** Elimina 'amount' items del tipo 'item' del inventario del jugador */
     private static void removeItem(ServerPlayer player, net.minecraft.world.item.Item item, int amount) {
         int remaining = amount;
         for (int i = 0; i < player.getInventory().getContainerSize() && remaining > 0; i++) {
@@ -71,8 +64,7 @@ public class RankManager {
         }
     }
 
-    // ===== MULTIPLICADOR DE DINERO POR RANGO (FASE 4.7) =====
-
+    // ===== MULTIPLICADOR DE DINERO POR RANGO =====
     public static int getMoneyMultiplier(Player player) {
         int rank = ModAttachments.getRank(player);
         return switch (rank) {
@@ -105,30 +97,31 @@ public class RankManager {
         return baseReward * getMoneyMultiplier(player);
     }
 
-    // ===== STATS POR RANGO (FASE 4.6) =====
+    // ===== STATS POR RANGO =====
+    // Rango 20 = +100 HP (antes +68)
 
     public static double getBonusHealth(int rank) {
         return switch (rank) {
             case 0, 1 -> 0;
-            case 2 -> 2;
-            case 3 -> 4;
-            case 4 -> 6;
-            case 5 -> 8;
-            case 6 -> 11;
-            case 7 -> 14;
-            case 8 -> 17;
-            case 9 -> 20;
-            case 10 -> 23;
-            case 11 -> 27;
-            case 12 -> 31;
-            case 13 -> 35;
-            case 14 -> 39;
-            case 15 -> 43;
-            case 16 -> 48;
-            case 17 -> 53;
-            case 18 -> 58;
-            case 19 -> 63;
-            case 20 -> 68;
+            case 2 -> 4;
+            case 3 -> 8;
+            case 4 -> 12;
+            case 5 -> 16;
+            case 6 -> 20;
+            case 7 -> 24;
+            case 8 -> 28;
+            case 9 -> 32;
+            case 10 -> 36;
+            case 11 -> 42;
+            case 12 -> 48;
+            case 13 -> 54;
+            case 14 -> 60;
+            case 15 -> 66;
+            case 16 -> 72;
+            case 17 -> 80;
+            case 18 -> 87;
+            case 19 -> 93;
+            case 20 -> 100;
             default -> 0;
         };
     }
@@ -136,25 +129,25 @@ public class RankManager {
     public static double getBonusDamage(int rank) {
         return switch (rank) {
             case 0, 1 -> 0;
-            case 2 -> 0.5;
-            case 3 -> 1;
-            case 4 -> 1.5;
-            case 5 -> 2;
-            case 6 -> 3;
-            case 7 -> 4;
-            case 8 -> 5;
-            case 9 -> 6;
-            case 10 -> 7;
-            case 11 -> 8.5;
-            case 12 -> 10;
-            case 13 -> 11.5;
-            case 14 -> 13;
-            case 15 -> 14.5;
-            case 16 -> 16;
-            case 17 -> 17.5;
-            case 18 -> 19;
-            case 19 -> 20.5;
-            case 20 -> 22;
+            case 2 -> 1;
+            case 3 -> 2;
+            case 4 -> 3;
+            case 5 -> 4;
+            case 6 -> 5;
+            case 7 -> 6;
+            case 8 -> 7;
+            case 9 -> 8;
+            case 10 -> 9;
+            case 11 -> 10;
+            case 12 -> 11.5;
+            case 13 -> 13;
+            case 14 -> 14.5;
+            case 15 -> 16;
+            case 16 -> 17.5;
+            case 17 -> 19;
+            case 18 -> 20.5;
+            case 19 -> 22;
+            case 20 -> 24;
             default -> 0;
         };
     }
@@ -162,25 +155,25 @@ public class RankManager {
     public static double getBonusArmor(int rank) {
         return switch (rank) {
             case 0, 1 -> 0;
-            case 2 -> 0.5;
-            case 3 -> 1;
-            case 4 -> 1.5;
-            case 5 -> 2;
-            case 6 -> 3;
-            case 7 -> 4;
-            case 8 -> 5;
-            case 9 -> 6;
-            case 10 -> 7;
-            case 11 -> 8.5;
-            case 12 -> 10;
-            case 13 -> 11.5;
-            case 14 -> 13;
-            case 15 -> 14.5;
-            case 16 -> 16;
-            case 17 -> 17.5;
-            case 18 -> 19;
-            case 19 -> 20.5;
-            case 20 -> 22;
+            case 2 -> 1;
+            case 3 -> 2;
+            case 4 -> 3;
+            case 5 -> 4;
+            case 6 -> 5;
+            case 7 -> 6;
+            case 8 -> 7;
+            case 9 -> 8;
+            case 10 -> 9;
+            case 11 -> 10;
+            case 12 -> 11.5;
+            case 13 -> 13;
+            case 14 -> 14.5;
+            case 15 -> 16;
+            case 16 -> 17.5;
+            case 17 -> 19;
+            case 18 -> 20.5;
+            case 19 -> 22;
+            case 20 -> 24;
             default -> 0;
         };
     }
@@ -192,30 +185,29 @@ public class RankManager {
             case 3 -> 0.10;
             case 4 -> 0.15;
             case 5 -> 0.20;
-            case 6 -> 0.30;
-            case 7 -> 0.40;
-            case 8 -> 0.50;
-            case 9 -> 0.60;
-            case 10 -> 0.70;
-            case 11 -> 0.85;
-            case 12 -> 1.00;
-            case 13 -> 1.15;
-            case 14 -> 1.30;
-            case 15 -> 1.45;
-            case 16 -> 1.65;
-            case 17 -> 1.85;
-            case 18 -> 2.05;
-            case 19 -> 2.25;
-            case 20 -> 2.45;
+            case 6 -> 0.25;
+            case 7 -> 0.30;
+            case 8 -> 0.35;
+            case 9 -> 0.40;
+            case 10 -> 0.45;
+            case 11 -> 0.50;
+            case 12 -> 0.55;
+            case 13 -> 0.60;
+            case 14 -> 0.65;
+            case 15 -> 0.70;
+            case 16 -> 0.80;
+            case 17 -> 0.90;
+            case 18 -> 1.00;
+            case 19 -> 1.10;
+            case 20 -> 1.20;
             default -> 0;
         };
     }
 
-    /** Multiplicador de XP por rango (se aplica a XP de bloques y mobs) */
     public static int getXpMultiplier(int rank) {
         if (rank <= 3) return 1;
         if (rank <= 9) return 2;
         if (rank <= 19) return 3;
-        return 4; // rango 20
+        return 4;
     }
 }
